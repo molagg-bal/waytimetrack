@@ -6,6 +6,13 @@
 
 let
   cfg = config.programs.waytimetrack;
+  tt = config.services.timetrack or { };
+  # timetrack nimmt nur Anfragen an localhost-Adressen an (Schutz vor DNS-Rebinding)
+  ttListen = tt.listenAddress or "127.0.0.1";
+  ttHost =
+    if ttListen == "::1" then "[::1]"
+    else if builtins.elem ttListen [ "0.0.0.0" "::" "" ] then "127.0.0.1"
+    else ttListen;
 in
 {
   options.programs.waytimetrack = {
@@ -14,9 +21,13 @@ in
     url = lib.mkOption {
       type = lib.types.str;
       # Port aus dem timetrack-Modul übernehmen, falls es auf demselben Rechner läuft
-      default = "http://127.0.0.1:${toString (config.services.timetrack.port or 54321)}";
+      default = "http://${ttHost}:${toString (tt.port or 54321)}";
       defaultText = lib.literalExpression ''"http://127.0.0.1:''${toString config.services.timetrack.port}"'';
-      description = "Adresse des timetrack-Webservers.";
+      description = ''
+        Adresse des timetrack-Webservers. timetrack nimmt nur Anfragen an localhost,
+        127.0.0.1 und [::1] an; andere Hostnamen müssen dort in
+        services.timetrack.allowedHosts eingetragen sein.
+      '';
     };
 
     signal = lib.mkOption {

@@ -46,7 +46,7 @@ Optionen (alle optional):
 | Option | Standard | Bedeutung |
 |---|---|---|
 | `programs.waytimetrack.enable` | `true` (durch den Import) | Befehl installieren |
-| `programs.waytimetrack.url` | `http://127.0.0.1:<services.timetrack.port>` | Adresse von timetrack |
+| `programs.waytimetrack.url` | `http://127.0.0.1:<services.timetrack.port>` | Adresse von timetrack (nur localhost-Adressen, siehe „Sicherheit“) |
 | `programs.waytimetrack.signal` | `8` | Signal für die sofortige Aktualisierung, muss zu `"signal"` in Waybar passen |
 
 ## 2. Waybar
@@ -108,6 +108,14 @@ bindsym $mod+Shift+w exec waytimetrack toggle
 
 Danach `swaymsg reload` (bzw. `$mod+Shift+c`). Die Kombination ist frei wählbar,
 `$mod+Shift+w` ist in der Standard-Sway-Konfiguration nicht belegt.
+
+## Sicherheit
+
+timetrack nimmt Anfragen nur an `localhost`, `127.0.0.1` und `[::1]` an und ändernde
+Anfragen nur als JSON. waytimetrack hält sich daran; die Standardadresse wird aus der
+timetrack-Konfiguration abgeleitet. Wer `programs.waytimetrack.url` auf einen anderen
+Hostnamen setzt, muss diesen in timetrack unter `services.timetrack.allowedHosts`
+freigeben, sonst erscheint „Unbekannter Host“ im Tooltip.
 
 ## Fehlersuche
 

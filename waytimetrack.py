@@ -33,7 +33,8 @@ def fmt_signed(sec: int) -> str:
 
 
 def api(method: str, path: str, body: dict | None = None) -> dict:
-    data = json.dumps(body).encode() if body is not None else None
+    # timetrack nimmt ändernde Anfragen nur als JSON an (CSRF-Schutz), daher immer JSON senden
+    data = json.dumps(body if body is not None else {}).encode() if method != "GET" else None
     req = urllib.request.Request(URL + path, data=data, method=method,
                                  headers={"Content-Type": "application/json"} if data else {})
     try:
